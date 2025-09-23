@@ -1,52 +1,74 @@
-# Training Data Viewer - TypeScript Version
+# Training Data Viewer - React 18 Version
 
-A modern, type-safe web application for viewing training data conversations with System, User, and Assistant messages, completely rewritten in TypeScript with a modular architecture.
+A modern, type-safe React 18 web application for viewing training data conversations with System, User, and Assistant messages, built with React hooks, TypeScript, and a component-based architecture.
 
 ## 🚀 Features
 
+- **React 18**: Modern React with hooks, functional components, and createRoot API
 - **TypeScript Implementation**: Full type safety with comprehensive interfaces and strict compilation
-- **Modular Architecture**: Clean separation of concerns with dedicated modules for each functionality
+- **Component-Based Architecture**: Reusable React components with proper props typing
+- **State Management**: React hooks (useState, useCallback) for efficient state management
 - **File Format Support**: Both JSON arrays and JSONL (line-delimited JSON) files
 - **Language Detection**: Automatic programming language detection from file paths
 - **Advanced Filtering**: Filter conversations by programming language or view all
 - **Smart Pagination**: Configurable items per page with navigation controls
 - **Tag Highlighting**: Visual highlighting of special tags in content with color coding
 - **Language Statistics**: Sidebar showing language distribution with clickable filters
+- **Message Folding**: Collapsible long messages with expand/collapse functionality
+- **Hot Module Replacement**: Fast development with Vite HMR
 - **Responsive Design**: Clean, modern UI with proper accessibility
 
 ## 📁 Project Structure
 
 ```
 src/
-├── script.ts                 # Main application entry point
-├── types.ts                  # TypeScript type definitions
-├── modules/
-│   ├── DataManager.ts        # Data loading and processing
-│   ├── UIRenderer.ts         # DOM manipulation and rendering
-│   ├── FilterManager.ts      # Data filtering logic
-│   ├── PaginationManager.ts  # Pagination functionality
-│   └── TagHighlighter.ts     # Tag detection and highlighting
-├── index.html               # HTML template
-├── styles.css               # Application styles
-└── *.jsonl                  # Sample data files
+├── main.tsx                 # React 18 application entry point (createRoot)
+├── App.tsx                  # Main React application component
+├── types.ts                 # TypeScript type definitions
+├── components/              # React components
+│   ├── Sidebar.tsx          # Language statistics sidebar
+│   ├── Header.tsx           # Application header
+│   ├── FileControls.tsx     # File upload and sample data controls
+│   ├── FilterControls.tsx   # Language filter dropdown
+│   ├── PaginationControls.tsx # Pagination navigation
+│   └── ConversationList.tsx # Conversation display with folding
+├── modules/                 # Core business logic modules
+│   ├── DataManager.ts       # Data loading and processing
+│   ├── FilterManager.ts     # Data filtering logic
+│   ├── PaginationManager.ts # Pagination functionality
+│   └── TagHighlighter.ts    # Tag detection and highlighting
+├── index.html              # HTML template with React root
+├── styles.css              # Application styles with React-specific classes
+└── *.jsonl                 # Sample data files
 
-dist/                        # Compiled JavaScript output
-├── script.js               # Compiled main application
-├── modules/                # Compiled modules
-├── *.d.ts                  # Generated type declarations
-└── *.js.map               # Source maps for debugging
+dist/                       # Vite build output
+├── index.html              # Built HTML with bundled assets
+├── assets/                 # Bundled CSS and JS files
+│   ├── index-[hash].css    # Bundled and optimized CSS
+│   └── index-[hash].js     # Bundled and optimized JavaScript
+└── *.map                   # Source maps for debugging
+
+vite.config.ts              # Vite configuration for React development
 ```
 
 ## 🏗️ Architecture
 
 ### Core Components
 
-1. **TrainingDataViewer**: Main application class orchestrating all modules
-2. **DataManager**: Handles file processing, language detection, and data statistics
-3. **UIRenderer**: Manages all DOM manipulation and user interface rendering
-4. **FilterManager**: Implements filtering logic for conversations by language
-5. **PaginationManager**: Handles data pagination and page calculations
-6. **TagHighlighter**: Detects and highlights special tags with color coding
+#### React Components
+1. **App**: Main React application component with hooks-based state management
+2. **Sidebar**: Language statistics display with clickable filters
+3. **Header**: Application title and description
+4. **FileControls**: File upload input and sample data loader
+5. **FilterControls**: Language filter dropdown selection
+6. **PaginationControls**: Navigation and items-per-page controls
+7. **ConversationList**: Message display with expand/collapse functionality
+
+#### Business Logic Modules
+1. **DataManager**: Handles file processing, language detection, and data statistics
+2. **FilterManager**: Implements filtering logic for conversations by language
+3. **PaginationManager**: Handles data pagination and page calculations
+4. **TagHighlighter**: Detects and highlights special tags with color coding
 
 ### Type System
 
@@ -71,32 +93,36 @@ dist/                        # Compiled JavaScript output
 # Install dependencies
 npm install
 
-# Build TypeScript
-npm run build
-
-# Start development server
+# Start development server (recommended - includes HMR)
 npm run dev
 
-# Build and serve production
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+
+# Legacy build and serve
 npm start
 ```
 
 ### Available Scripts
 
-- `npm run build`: Compile TypeScript to JavaScript
-- `npm run build:watch`: Watch mode compilation
-- `npm start`: Build and serve the application
-- `npm run dev`: Development mode with watch compilation
-- `npm run serve`: Serve the built application
+- `npm run dev`: Start Vite development server with HMR (recommended for development)
+- `npm run build`: Build production-optimized bundle with Vite
+- `npm run preview`: Preview production build locally
+- `npm start`: Build and serve the application (legacy)
+- `npm run serve`: Serve the built application from dist folder
 
-### TypeScript Configuration
+### React + TypeScript Configuration
 
-The project uses strict TypeScript settings:
-- Strict null checks and type checking
-- ES2020 target with ES modules
-- Source maps for debugging
-- Declaration files generation
-- Comprehensive compiler options for type safety
+The project uses modern React 18 with strict TypeScript settings:
+- **React 18**: Latest React with createRoot, hooks, and concurrent features
+- **JSX Transform**: Modern `jsx: "react-jsx"` for automatic JSX runtime
+- **Strict TypeScript**: Comprehensive type checking with all strict options enabled
+- **Vite**: Fast development server with Hot Module Replacement (HMR)
+- **ES2020 target**: Modern JavaScript features and ES modules
+- **Source maps**: Full debugging support in development and production
 
 ## 📝 Usage
 

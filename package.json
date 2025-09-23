@@ -2,25 +2,35 @@
   "name": "training-data-viewer",
   "version": "1.0.0",
   "description": "A simple web application for viewing training data conversations with System, User, and Assistant messages",
-  "main": "dist/script.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
+    "build": "vite build",
+    "build:watch": "vite build --watch",
     "start": "npm run build && npx serve dist",
-    "dev": "npm run build:watch & npx serve dist",
-    "serve": "npx serve dist"
+    "dev": "vite",
+    "serve": "npx serve dist",
+    "preview": "vite preview"
   },
   "keywords": [
     "training-data",
     "viewer",
     "conversation",
-    "AI"
+    "AI",
+    "react"
   ],
   "author": "GitHub Copilot",
   "license": "MIT",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
   "devDependencies": {
     "@types/node": "^24.5.2",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
+    "@vitejs/plugin-react": "^4.0.0",
     "serve": "^14.2.5",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "vite": "^4.4.0"
   }
 }
