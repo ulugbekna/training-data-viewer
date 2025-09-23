@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TagHighlighter } from '../modules/TagHighlighter';
 import { TrainingData } from '../types';
 
@@ -19,8 +19,25 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
   index,
   tagHighlighter
 }) => {
+  // State to track collapsed state for each message
+  const [collapsedMessages, setCollapsedMessages] = useState<boolean[]>(
+    conversation.messages?.map(() => false) || []
+  );
+
   const highlightContent = (content: string) => {
     return tagHighlighter.highlightTags(content);
+  };
+
+  const toggleMessageCollapse = (messageIndex: number) => {
+    setCollapsedMessages(prev => {
+      const newCollapsed = [...prev];
+      newCollapsed[messageIndex] = !newCollapsed[messageIndex];
+      return newCollapsed;
+    });
+  };
+
+  const isLongMessage = (content: string) => {
+    return content.length > 500 || content.split('\n').length > 10;
   };
 
   return (
@@ -34,16 +51,31 @@ const ConversationItem: React.FC<ConversationItemProps> = ({
       
       <div className="messages">
         {conversation.messages?.map((message: any, messageIndex: number) => {
+          const isLong = isLongMessage(message.content);
+          const isCollapsed = collapsedMessages[messageIndex];
+          
           return (
             <div key={messageIndex} className={`message ${message.role}`}>
               <div className="message-header">
                 <span className="message-role">{message.role}</span>
+                {isLong && (
+                  <button 
+                    className="collapse-button"
+                    onClick={() => toggleMessageCollapse(messageIndex)}
+                  >
+                    {isCollapsed ? 'Expand' : 'Collapse'}
+                  </button>
+                )}
               </div>
               
               <div 
-                className="message-content preserve-whitespace"
+                className={`message-content preserve-whitespace ${isLong && isCollapsed ? 'collapsed' : ''}`}
                 dangerouslySetInnerHTML={{
-                  __html: highlightContent(message.content)
+                  __html: highlightContent(
+                    isLong && isCollapsed 
+                      ? message.content.substring(0, 500) + '...' 
+                      : message.content
+                  )
                 }}
               />
             </div>

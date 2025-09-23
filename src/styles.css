@@ -134,7 +134,7 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
 }
 
 .role {
@@ -408,7 +408,35 @@ code {
     margin-bottom: 8px;
 }
 
-/* Message header styles (simplified without clickable functionality) */
+.collapse-button {
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.collapse-button:hover {
+    background-color: #e0e0e0;
+}
+
+.message-content.collapsed {
+    max-height: 100px;
+    overflow: hidden;
+    position: relative;
+}
+
+.message-content.collapsed::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1));
+}
 
 .no-conversations {
     text-align: center;
