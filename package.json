@@ -1,0 +1,21 @@
+{
+  "name": "training-data-viewer",
+  "version": "1.0.0",
+  "description": "A simple web application for viewing training data conversations with System, User, and Assistant messages",
+  "main": "src/script.js",
+  "scripts": {
+    "start": "npx serve src",
+    "dev": "npx serve src"
+  },
+  "keywords": [
+    "training-data",
+    "viewer",
+    "conversation",
+    "AI"
+  ],
+  "author": "GitHub Copilot",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.5"
+  }
+}
