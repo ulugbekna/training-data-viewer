@@ -46,6 +46,93 @@ let itemsPerPage = 5;
 let currentData = [];
 let currentFilter = 'all';
 
+// Tag highlighting colors - more visible background colors
+const tagColors = [
+    '#FFD700', // Gold
+    '#98FB98', // PaleGreen
+    '#87CEEB', // SkyBlue
+    '#DDA0DD', // Plum
+    '#F0E68C', // Khaki
+    '#FFB6C1', // LightPink
+    '#20B2AA', // LightSeaGreen
+    '#FFA07A', // LightSalmon
+    '#B0C4DE', // LightSteelBlue
+    '#FFE4B5', // Moccasin
+    '#D3D3D3', // LightGray
+    '#F5DEB3', // Wheat
+    '#E0E0E0', // Gainsboro
+    '#AFEEEE', // PaleTurquoise
+    '#DB7093', // PaleVioletRed
+    '#90EE90', // LightGreen
+    '#FFE4E1', // MistyRose
+    '#FAFAD2', // LightGoldenrodYellow
+    '#E6E6FA', // Lavender
+    '#FFC0CB'  // Pink
+];
+
+// Function to extract unique tag names from content
+function extractTagNames(content) {
+    const tagRegex = /<\|([^|]+)\|>/g;
+    const tagNames = new Set();
+    let match;
+    
+    while ((match = tagRegex.exec(content)) !== null) {
+        // Add the full tag name (including forward slash if present)
+        tagNames.add(match[1]);
+        
+        // For tags with forward slash, also add the base name for color consistency
+        // e.g., both 'code_block' and '/code_block' get the same color
+        if (match[1].startsWith('/')) {
+            tagNames.add(match[1].substring(1)); // Remove the leading slash
+        }
+    }
+    
+    return Array.from(tagNames);
+}
+
+// Function to highlight tags in content
+function highlightTags(content) {
+    const tagNames = extractTagNames(content);
+    
+    if (tagNames.length === 0) {
+        return content;
+    }
+    
+    let highlightedContent = content;
+    
+    // Assign colors to each unique tag name (base name without slash)
+    const tagColorMap = {};
+    const baseTagNames = new Set();
+    
+    // First, collect all base tag names for consistent color assignment
+    tagNames.forEach(tagName => {
+        const baseName = tagName.startsWith('/') ? tagName.substring(1) : tagName;
+        baseTagNames.add(baseName);
+    });
+    
+    // Assign colors to base tag names
+    Array.from(baseTagNames).forEach((baseName, index) => {
+        tagColorMap[baseName] = tagColors[index % tagColors.length];
+    });
+    
+    // Replace all individual tags with highlighted versions
+    const allTagRegex = /<\|([^|]+)\|>/g;
+    highlightedContent = highlightedContent.replace(allTagRegex, (match, tagName) => {
+        // Use base name for color lookup (remove leading slash if present)
+        const baseName = tagName.startsWith('/') ? tagName.substring(1) : tagName;
+        const color = tagColorMap[baseName];
+        
+        return `<span class="tag-highlight" style="background-color: ${color}">${match}</span>`;
+    });
+    
+    return highlightedContent;
+}
+
+// Helper function to escape special regex characters
+function escapeRegex(string) {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 // Event listeners
 fileInput.addEventListener('change', handleFileSelect);
 loadSampleBtn.addEventListener('click', loadSampleData);
@@ -89,6 +176,8 @@ function loadSampleData() {
     currentData = sampleData;
     renderMessagesWithPaginationAndFilter(sampleData, currentPage, itemsPerPage, currentFilter);
 }
+
+
 
 // Extract language from file path
 function extractLanguageFromPath(content) {
@@ -395,9 +484,17 @@ function renderMessagesWithPaginationAndFilter(data, page, itemsPerPage, filter)
             roleElement.className = `role ${message.role}`;
             roleElement.textContent = message.role;
             
-            const contentElement = document.createElement('div');
+                        const contentElement = document.createElement('div');
             contentElement.className = 'content';
-            contentElement.textContent = message.content;
+            const highlightedContent = highlightTags(message.content);
+            
+            // Check if content was highlighted (contains HTML spans)
+            if (highlightedContent !== message.content && highlightedContent.includes('<span class="tag-highlight"')) {
+                contentElement.innerHTML = highlightedContent;
+            } else {
+                // No tags found, use textContent to preserve formatting and avoid XSS
+                contentElement.textContent = message.content;
+            }
             
             const headerElement = document.createElement('div');
             headerElement.className = 'message-header';

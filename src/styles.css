@@ -265,3 +265,10 @@ code {
     font-family: 'Courier New', monospace;
     font-size: 14px;
 }
+
+/* Tag highlighting styles */
+.tag-highlight {
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    display: inline;
+}
