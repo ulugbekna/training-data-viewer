@@ -45,6 +45,8 @@ let currentPage = 1;
 let itemsPerPage = 5;
 let currentData = [];
 let currentFilter = 'all';
+// New variable to store global indices
+let globalIndices = [];
 
 // Tag highlighting colors - more visible background colors
 const tagColors = [
@@ -150,18 +152,24 @@ function handleFileSelect(event) {
                 // Process JSONL file - each line is a separate JSON object
                 const lines = e.target.result.split('\n');
                 const data = [];
-                for (const line of lines) {
+                const indices = [];
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
                     if (line.trim() !== '') {
                         data.push(JSON.parse(line));
+                        indices.push(i); // Store line index (0-based)
                     }
                 }
                 currentData = data;
-                renderMessagesWithPaginationAndFilter(data, currentPage, itemsPerPage, currentFilter);
+                globalIndices = indices;
+                renderMessagesWithPaginationAndFilter(data, indices, currentPage, itemsPerPage, currentFilter);
             } else {
                 // Process regular JSON file
                 const data = JSON.parse(e.target.result);
                 currentData = data;
-                renderMessagesWithPaginationAndFilter(data, currentPage, itemsPerPage, currentFilter);
+                // For JSON arrays, indices are just the array indices (0-based)
+                globalIndices = data.map((_, index) => index);
+                renderMessagesWithPaginationAndFilter(data, globalIndices, currentPage, itemsPerPage, currentFilter);
             }
         } catch (error) {
             console.error('Error parsing file:', error);
@@ -174,10 +182,10 @@ function handleFileSelect(event) {
 // Load sample data
 function loadSampleData() {
     currentData = sampleData;
-    renderMessagesWithPaginationAndFilter(sampleData, currentPage, itemsPerPage, currentFilter);
+    // For sample data, indices are just the array indices (0-based)
+    globalIndices = sampleData.map((_, index) => index);
+    renderMessagesWithPaginationAndFilter(sampleData, globalIndices, currentPage, itemsPerPage, currentFilter);
 }
-
-
 
 // Extract language from file path
 function extractLanguageFromPath(content) {
@@ -273,7 +281,7 @@ function renderLanguageStats(data) {
     allItem.addEventListener('click', () => {
         currentFilter = 'all';
         currentPage = 1;
-        renderMessagesWithPaginationAndFilter(currentData, currentPage, itemsPerPage, currentFilter);
+        renderMessagesWithPaginationAndFilter(currentData, globalIndices, currentPage, itemsPerPage, currentFilter);
     });
     
     statsContainer.appendChild(allItem);
@@ -304,7 +312,7 @@ function renderLanguageStats(data) {
         statItem.addEventListener('click', () => {
             currentFilter = language;
             currentPage = 1;
-            renderMessagesWithPaginationAndFilter(currentData, currentPage, itemsPerPage, currentFilter);
+            renderMessagesWithPaginationAndFilter(currentData, globalIndices, currentPage, itemsPerPage, currentFilter);
         });
         
         statsContainer.appendChild(statItem);
@@ -345,8 +353,32 @@ function filterDataByLanguage(data, language) {
     });
 }
 
+// Get global indices for filtered data
+function getGlobalIndicesForFilteredData(data, allGlobalIndices, language) {
+    if (language === 'all') {
+        return allGlobalIndices;
+    }
+    
+    const filteredIndices = [];
+    data.forEach((conversation, index) => {
+        const hasLanguage = conversation.messages.some(message => {
+            if (message.role === 'user') {
+                const msgLanguage = extractLanguageFromPath(message.content);
+                return msgLanguage === language;
+            }
+            return false;
+        });
+        
+        if (hasLanguage) {
+            filteredIndices.push(allGlobalIndices[index]);
+        }
+    });
+    
+    return filteredIndices;
+}
+
 // Render messages with pagination and filtering
-function renderMessagesWithPaginationAndFilter(data, page, itemsPerPage, filter) {
+function renderMessagesWithPaginationAndFilter(data, globalIndices, page, itemsPerPage, filter) {
     // Render language statistics
     renderLanguageStats(data);
     
@@ -355,11 +387,13 @@ function renderMessagesWithPaginationAndFilter(data, page, itemsPerPage, filter)
     
     // Filter data by language
     const filteredData = filterDataByLanguage(data, filter);
+    const filteredGlobalIndices = getGlobalIndicesForFilteredData(data, globalIndices, filter);
     
     // Calculate start and end index
     const startIndex = (page - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const pageData = filteredData.slice(startIndex, endIndex);
+    const pageGlobalIndices = filteredGlobalIndices.slice(startIndex, endIndex);
     
     // Create filter controls
     const filterControls = document.createElement('div');
@@ -400,7 +434,7 @@ function renderMessagesWithPaginationAndFilter(data, page, itemsPerPage, filter)
     languageFilter.addEventListener('change', (event) => {
         currentFilter = event.target.value;
         currentPage = 1;
-        renderMessagesWithPaginationAndFilter(data, currentPage, itemsPerPage, currentFilter);
+        renderMessagesWithPaginationAndFilter(data, globalIndices, currentPage, itemsPerPage, currentFilter);
     });
     
     filterControls.appendChild(filterLabel);
@@ -417,7 +451,7 @@ function renderMessagesWithPaginationAndFilter(data, page, itemsPerPage, filter)
     prevButton.addEventListener('click', () => {
         if (page > 1) {
             currentPage = page - 1;
-            renderMessagesWithPaginationAndFilter(filteredData, currentPage, itemsPerPage, filter);
+            renderMessagesWithPaginationAndFilter(data, globalIndices, currentPage, itemsPerPage, currentFilter);
         }
     });
     
@@ -428,7 +462,7 @@ function renderMessagesWithPaginationAndFilter(data, page, itemsPerPage, filter)
     nextButton.addEventListener('click', () => {
         if (endIndex < filteredData.length) {
             currentPage = page + 1;
-            renderMessagesWithPaginationAndFilter(filteredData, currentPage, itemsPerPage, filter);
+            renderMessagesWithPaginationAndFilter(data, globalIndices, currentPage, itemsPerPage, currentFilter);
         }
     });
     
@@ -457,7 +491,7 @@ function renderMessagesWithPaginationAndFilter(data, page, itemsPerPage, filter)
     itemsPerPageSelector.addEventListener('change', (event) => {
         itemsPerPage = parseInt(event.target.value);
         currentPage = 1;
-        renderMessagesWithPaginationAndFilter(data, currentPage, itemsPerPage, currentFilter);
+        renderMessagesWithPaginationAndFilter(data, globalIndices, currentPage, itemsPerPage, currentFilter);
     });
     
     paginationControls.appendChild(prevButton);
@@ -470,10 +504,10 @@ function renderMessagesWithPaginationAndFilter(data, page, itemsPerPage, filter)
     
     // Iterate through each conversation in the page data
     pageData.forEach((conversation, index) => {
-        const actualIndex = startIndex + index;
+        const globalIndex = pageGlobalIndices[index];
         const conversationElement = document.createElement('div');
         conversationElement.className = 'conversation';
-        conversationElement.innerHTML = `<h2>Conversation ${actualIndex + 1}</h2>`;
+        conversationElement.innerHTML = `<h2>Conversation ${globalIndex}</h2>`;
         
         // Iterate through each message in the conversation
         conversation.messages.forEach(message => {
@@ -484,7 +518,7 @@ function renderMessagesWithPaginationAndFilter(data, page, itemsPerPage, filter)
             roleElement.className = `role ${message.role}`;
             roleElement.textContent = message.role;
             
-                        const contentElement = document.createElement('div');
+            const contentElement = document.createElement('div');
             contentElement.className = 'content';
             const highlightedContent = highlightTags(message.content);
             
@@ -514,27 +548,28 @@ function renderMessagesWithPaginationAndFilter(data, page, itemsPerPage, filter)
     messagesContainer.appendChild(bottomPaginationControls);
     
     // Reattach event listeners for bottom pagination controls
-    const bottomPrevButton = bottomPaginationControls.querySelector('button');
-    const bottomNextButton = bottomPaginationControls.querySelectorAll('button')[1];
-    const bottomItemsPerPageSelector = bottomPaginationControls.querySelector('select');
+    const bottomControls = messagesContainer.querySelectorAll('.pagination-controls.bottom button');
+    const bottomPrevButton = bottomControls[0];
+    const bottomNextButton = bottomControls[1];
+    const bottomItemsPerPageSelector = messagesContainer.querySelector('.pagination-controls.bottom .items-per-page');
     
     bottomPrevButton.addEventListener('click', () => {
         if (page > 1) {
             currentPage = page - 1;
-            renderMessagesWithPaginationAndFilter(data, currentPage, itemsPerPage, currentFilter);
+            renderMessagesWithPaginationAndFilter(data, globalIndices, currentPage, itemsPerPage, currentFilter);
         }
     });
     
     bottomNextButton.addEventListener('click', () => {
-        if (endIndex < data.length) {
+        if (endIndex < filteredData.length) {
             currentPage = page + 1;
-            renderMessagesWithPaginationAndFilter(data, currentPage, itemsPerPage, currentFilter);
+            renderMessagesWithPaginationAndFilter(data, globalIndices, currentPage, itemsPerPage, currentFilter);
         }
     });
     
     bottomItemsPerPageSelector.addEventListener('change', (event) => {
         itemsPerPage = parseInt(event.target.value);
         currentPage = 1;
-        renderMessagesWithPaginationAndFilter(data, currentPage, itemsPerPage, currentFilter);
+        renderMessagesWithPaginationAndFilter(data, globalIndices, currentPage, itemsPerPage, currentFilter);
     });
 }
