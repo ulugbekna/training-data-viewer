@@ -1,52 +1,216 @@
-# Training Data Viewer
+# Training Data Viewer - TypeScript Version
 
-A simple web application for viewing training data conversations with System, User, and Assistant messages.
+A modern, type-safe web application for viewing training data conversations with System, User, and Assistant messages, completely rewritten in TypeScript with a modular architecture.
 
-## Features
+## 🚀 Features
 
-- Load JSON files containing conversation data
-- Display conversations with distinct styling for each message role:
-  - System messages (blue)
-  - User messages (green)
-  - Assistant messages (purple)
-- Sample data loading for demonstration
-- Pagination support for large datasets
-- Adjustable items per page (5, 10, 20, or 50 conversations per page)
-- Enhanced code block rendering for messages containing programming code
-- Language filtering based on file basename in user messages
-- Language statistics showing count of samples per language
+- **TypeScript Implementation**: Full type safety with comprehensive interfaces and strict compilation
+- **Modular Architecture**: Clean separation of concerns with dedicated modules for each functionality
+- **File Format Support**: Both JSON arrays and JSONL (line-delimited JSON) files
+- **Language Detection**: Automatic programming language detection from file paths
+- **Advanced Filtering**: Filter conversations by programming language or view all
+- **Smart Pagination**: Configurable items per page with navigation controls
+- **Tag Highlighting**: Visual highlighting of special tags in content with color coding
+- **Language Statistics**: Sidebar showing language distribution with clickable filters
+- **Responsive Design**: Clean, modern UI with proper accessibility
 
-## Data Format
+## 📁 Project Structure
 
-The application expects either:
+```
+src/
+├── script.ts                 # Main application entry point
+├── types.ts                  # TypeScript type definitions
+├── modules/
+│   ├── DataManager.ts        # Data loading and processing
+│   ├── UIRenderer.ts         # DOM manipulation and rendering
+│   ├── FilterManager.ts      # Data filtering logic
+│   ├── PaginationManager.ts  # Pagination functionality
+│   └── TagHighlighter.ts     # Tag detection and highlighting
+├── index.html               # HTML template
+├── styles.css               # Application styles
+└── *.jsonl                  # Sample data files
 
-1. A JSON array with the following structure:
-   ```json
-   [
-     {
-       "messages": [
-         {
-           "role": "system",
-           "content": "System message content"
-         },
-         {
-           "role": "user",
-           "content": "User message content"
-         },
-         {
-           "role": "assistant",
-           "content": "Assistant message content"
-         }
-       ]
-     }
-   ]
-   ```
+dist/                        # Compiled JavaScript output
+├── script.js               # Compiled main application
+├── modules/                # Compiled modules
+├── *.d.ts                  # Generated type declarations
+└── *.js.map               # Source maps for debugging
+```
 
-2. A JSONL file where each line contains a JSON object with the same structure:
-   ```
-   {"messages": [{"role": "system", "content": "System message content"}, {"role": "user", "content": "User message content"}, {"role": "assistant", "content": "Assistant message content"}]}
-   {"messages": [{"role": "system", "content": "Another system message"}, {"role": "user", "content": "Another user message"}, {"role": "assistant", "content": "Another assistant message"}]}
-   ```
+## 🏗️ Architecture
+
+### Core Components
+
+1. **TrainingDataViewer**: Main application class orchestrating all modules
+2. **DataManager**: Handles file processing, language detection, and data statistics
+3. **UIRenderer**: Manages all DOM manipulation and user interface rendering
+4. **FilterManager**: Implements filtering logic for conversations by language
+5. **PaginationManager**: Handles data pagination and page calculations
+6. **TagHighlighter**: Detects and highlights special tags with color coding
+
+### Type System
+
+- **Message**: Individual message structure with role and content
+- **Conversation**: Collection of messages
+- **TrainingData**: Array of conversations
+- **FilterType**: Union type for available filters
+- **PaginationConfig**: Pagination state and configuration
+- **LanguageStats**: Language occurrence statistics
+- **UIElements**: DOM element references with proper typing
+
+## 🛠️ Development
+
+### Prerequisites
+
+- Node.js (v14 or higher)
+- npm
+
+### Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Build TypeScript
+npm run build
+
+# Start development server
+npm run dev
+
+# Build and serve production
+npm start
+```
+
+### Available Scripts
+
+- `npm run build`: Compile TypeScript to JavaScript
+- `npm run build:watch`: Watch mode compilation
+- `npm start`: Build and serve the application
+- `npm run dev`: Development mode with watch compilation
+- `npm run serve`: Serve the built application
+
+### TypeScript Configuration
+
+The project uses strict TypeScript settings:
+- Strict null checks and type checking
+- ES2020 target with ES modules
+- Source maps for debugging
+- Declaration files generation
+- Comprehensive compiler options for type safety
+
+## 📝 Usage
+
+1. **Load Data**: 
+   - Click "Load Sample Data" for demo data
+   - Or upload your own JSON/JSONL files
+
+2. **Filter Content**:
+   - Use the sidebar language statistics (clickable)
+   - Use the dropdown filter in the main area
+
+3. **Navigate Data**:
+   - Use pagination controls at top and bottom
+   - Adjust items per page as needed
+
+4. **View Details**:
+   - Each conversation shows all messages with role-based styling
+   - Special tags are highlighted with colors
+   - Language statistics update based on current filter
+
+## 🔧 File Formats
+
+### JSON Array Format
+```json
+[
+  {
+    "messages": [
+      {
+        "role": "system",
+        "content": "You are a helpful assistant."
+      },
+      {
+        "role": "user", 
+        "content": "Hello, can you help me?"
+      },
+      {
+        "role": "assistant",
+        "content": "Of course! What can I help you with?"
+      }
+    ]
+  }
+]
+```
+
+### JSONL Format
+Each line contains a separate conversation object:
+```jsonl
+{"messages": [{"role": "system", "content": "..."}, {"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]}
+{"messages": [{"role": "system", "content": "..."}, {"role": "user", "content": "..."}, {"role": "assistant", "content": "..."}]}
+```
+
+## 🎨 Features Detail
+
+### Language Detection
+Automatically detects programming languages from file path patterns in user messages:
+- Supports 20+ programming languages
+- File extension mapping to language names
+- Handles complex paths with fragments
+
+### Tag Highlighting
+Detects and highlights special tags with format `<|tag_name|>`:
+- Consistent color assignment per tag type
+- Supports opening/closing tag pairs
+- 20 predefined highlight colors
+
+### Smart Filtering
+- Filter by specific programming language
+- "All Languages" view
+- Real-time statistics updates
+- Maintains pagination state across filters
+
+## 🚀 Production Deployment
+
+The application compiles to standard ES modules and can be deployed to any static hosting service:
+
+1. Run `npm run build`
+2. Deploy the `dist/` directory
+3. Ensure your server serves ES modules with proper MIME types
+
+## 🔄 Migration from JavaScript
+
+This TypeScript version provides:
+- **100% type safety** with comprehensive interfaces
+- **Modular architecture** replacing the monolithic script
+- **Better error handling** with compile-time checks
+- **Enhanced maintainability** with clear separation of concerns
+- **Development productivity** with IntelliSense and refactoring support
+- **Runtime reliability** with strict type checking
+
+The application maintains complete compatibility with existing data formats while providing a modern, scalable codebase.
+
+## Sample Data
+The repository includes several sample data files:
+- `sample.jsonl` - Basic conversation examples
+- `code-sample.jsonl` - Programming-related conversations
+- `language-sample.jsonl` - Multi-language programming examples
+- `notebook-sample.jsonl` - Jupyter notebook conversations
+- `large-sample.jsonl` - Larger dataset for testing pagination
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes with proper TypeScript types
+4. Ensure `npm run build` passes without errors
+5. Submit a pull request
+
+---
+
+**Built with TypeScript ❤️ for type safety and developer experience**
 
 ## Usage
 

@@ -2,10 +2,13 @@
   "name": "training-data-viewer",
   "version": "1.0.0",
   "description": "A simple web application for viewing training data conversations with System, User, and Assistant messages",
-  "main": "src/script.js",
+  "main": "dist/script.js",
   "scripts": {
-    "start": "npx serve src",
-    "dev": "npx serve src"
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "start": "npm run build && npx serve dist",
+    "dev": "npm run build:watch & npx serve dist",
+    "serve": "npx serve dist"
   },
   "keywords": [
     "training-data",
@@ -16,6 +19,8 @@
   "author": "GitHub Copilot",
   "license": "MIT",
   "devDependencies": {
-    "serve": "^14.2.5"
+    "@types/node": "^24.5.2",
+    "serve": "^14.2.5",
+    "typescript": "^5.9.2"
   }
 }
