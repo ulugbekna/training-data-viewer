@@ -162,13 +162,43 @@ function renderLanguageStats(data) {
     const statsContainer = document.createElement('div');
     statsContainer.className = 'language-stats';
     
+    // Add "All Languages" option at the top
+    const allItem = document.createElement('div');
+    allItem.className = 'language-stat-item clickable';
+    if (currentFilter === 'all') {
+        allItem.classList.add('active');
+    }
+    
+    const allName = document.createElement('span');
+    allName.className = 'language-name';
+    allName.textContent = 'All Languages';
+    
+    const allCount = document.createElement('span');
+    allCount.className = 'language-count';
+    allCount.textContent = data.length;
+    
+    allItem.appendChild(allName);
+    allItem.appendChild(allCount);
+    
+    // Add click handler for "All Languages"
+    allItem.addEventListener('click', () => {
+        currentFilter = 'all';
+        currentPage = 1;
+        renderMessagesWithPaginationAndFilter(currentData, currentPage, itemsPerPage, currentFilter);
+    });
+    
+    statsContainer.appendChild(allItem);
+    
     // Convert to array and sort by count (descending)
     const sortedLanguages = Object.entries(languageCounts)
         .sort((a, b) => b[1] - a[1]);
     
     sortedLanguages.forEach(([language, count]) => {
         const statItem = document.createElement('div');
-        statItem.className = 'language-stat-item';
+        statItem.className = 'language-stat-item clickable';
+        if (currentFilter === language) {
+            statItem.classList.add('active');
+        }
         
         const languageName = document.createElement('span');
         languageName.className = 'language-name';
@@ -180,6 +210,14 @@ function renderLanguageStats(data) {
         
         statItem.appendChild(languageName);
         statItem.appendChild(languageCount);
+        
+        // Add click handler to filter by this language
+        statItem.addEventListener('click', () => {
+            currentFilter = language;
+            currentPage = 1;
+            renderMessagesWithPaginationAndFilter(currentData, currentPage, itemsPerPage, currentFilter);
+        });
+        
         statsContainer.appendChild(statItem);
     });
     
@@ -265,6 +303,9 @@ function renderMessagesWithPaginationAndFilter(data, page, itemsPerPage, filter)
         }
         languageFilter.appendChild(option);
     });
+    
+    // Set the current filter value in the dropdown
+    languageFilter.value = filter;
     
     // Event listener for language filter change
     languageFilter.addEventListener('change', (event) => {

@@ -211,8 +211,24 @@ h1 {
 .language-stat-item {
     display: flex;
     justify-content: space-between;
-    padding: 5px 0;
+    padding: 8px;
     border-bottom: 1px solid #eee;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+}
+
+.language-stat-item.clickable {
+    cursor: pointer;
+}
+
+.language-stat-item.clickable:hover {
+    background-color: #f0f8ff;
+}
+
+.language-stat-item.active {
+    background-color: #e3f2fd;
+    border: 1px solid #007acc;
+    border-bottom: 1px solid #007acc;
 }
 
 .language-name {
@@ -225,6 +241,8 @@ h1 {
     padding: 2px 8px;
     border-radius: 12px;
     font-size: 12px;
+    min-width: 20px;
+    text-align: center;
 }
 
 /* Code block styles */
