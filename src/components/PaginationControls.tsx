@@ -29,35 +29,24 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
       
       <div className="pagination-buttons">
         <button
-          onClick={() => onPaginationChange(1)}
-          disabled={currentPage === 1}
-        >
-          First
-        </button>
-        <button
           onClick={() => onPaginationChange(currentPage - 1)}
           disabled={currentPage === 1}
+          className="pagination-arrow"
         >
-          Previous
+          ←
         </button>
-        
-        <span className="page-info">
-          Page {currentPage} of {totalPages}
-        </span>
-        
         <button
           onClick={() => onPaginationChange(currentPage + 1)}
           disabled={currentPage === totalPages}
+          className="pagination-arrow"
         >
-          Next
-        </button>
-        <button
-          onClick={() => onPaginationChange(totalPages)}
-          disabled={currentPage === totalPages}
-        >
-          Last
+          →
         </button>
       </div>
+      
+      <span className="page-info">
+        Page {currentPage} of {totalPages}
+      </span>
 
       {!isBottom && (
         <div className="items-per-page">
